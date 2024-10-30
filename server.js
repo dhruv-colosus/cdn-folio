@@ -7,7 +7,6 @@ const fs = require("fs");
 const rateLimit = require("express-rate-limit");
 
 const app = express();
-const PORT = 3000;
 const JWT_SECRET = process.env.JWT_SECRET;
 const authenticate = require("./middleware/auth");
 app.set("view engine", "ejs");
@@ -55,7 +54,7 @@ const upload = multer({
 
 function generateToken() {
   return jwt.sign({ username: process.env.ADMIN_USERNAME }, JWT_SECRET, {
-    expiresIn: "5m",
+    expiresIn: process.env.SESSION_TIMEOUT,
   });
 }
 
@@ -114,6 +113,6 @@ app.delete("/delete/:filename", authenticate, (req, res) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+app.listen(process.env.PORT, () => {
+  console.log(`Server running at http://localhost:${process.env.PORT}`);
 });
