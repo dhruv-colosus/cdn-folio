@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Upload</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body
+    class="flex flex-col items-center justify-center min-h-screen py-8 bg-neutral-950 text-neutral-50"
+  >
+    <h1 class="text-xl font-bold mb-6">Upload File</h1>
+    <form
+      action="/upload"
+      method="POST"
+      enctype="multipart/form-data"
+      id="uploadForm"
+      class="bg-neutral-950 border border-neutral-800 p-6 rounded-lg shadow-lg max-w-md w-full"
+    >
+      <label for="file" class="block mb-4 font-medium text-sm text-yellow-500">
+        Choose file (Max 1MB):
+      </label>
+      <div class="flex items-center">
+        <label
+          for="file"
+          class="cursor-pointer px-4 py-2 bg-yellow-300 text-neutral-950 text-xs font-semibold rounded shadow-md transition-colors hover:bg-yellow-400"
+        >
+          Select File
+        </label>
+        <span id="file-name" class="ml-4 text-sm text-yellow-700">
+          No file chosen
+        </span>
+      </div>
+      <input type="file" name="file" id="file" required class="hidden" />
+      <button
+        type="submit"
+        class="w-full mt-6 py-2 bg-yellow-500 text-neutral-950 text-xs font-bold rounded-sm shadow-md transition-colors hover:bg-yellow-400"
+      >
+        Upload
+      </button>
+    </form>
+
+    <script>
+      window.onload = function () {
+        const cdntoken = localStorage.getItem("cdntoken");
+        if (!cdntoken) {
+          window.location.href = "/login";
+        }
+      };
+
+      document
+        .getElementById("uploadForm")
+        .addEventListener("submit", (event) => {
+          event.preventDefault();
+
+          const cdntoken = localStorage.getItem("cdntoken");
+
+          if (!cdntoken) {
+            alert("You are not authorized. Please log in.");
+            window.location.href = "/login";
+            return;
+          }
+
+          const xhr = new XMLHttpRequest();
+          xhr.open("POST", "/upload", true);
+          xhr.setRequestHeader("Authorization", `Bearer ${cdntoken}`);
+
+          xhr.onload = function () {
+            if (xhr.status === 200) {
+              alert("File uploaded successfully!");
+            } else {
+              alert("Upload failed. Please try again.");
+            }
+          };
+
+          const formData = new FormData(event.target);
+          xhr.send(formData);
+        });
+
+      // Update the file name text on file selection
+      document.getElementById("file").addEventListener("change", (event) => {
+        const fileName = event.target.files[0]
+          ? event.target.files[0].name
+          : "No file chosen";
+        document.getElementById("file-name").innerText = fileName;
+      });
+    </script>
+  </body>
+</html>
