@@ -6,6 +6,10 @@
 
     <title>CDN</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
   </head>
   <body
     class="flex flex-col items-center min-h-screen py-8 bg-zinc-950 text-neutral-50 mt-10"
@@ -25,7 +29,10 @@
         Upload
       </button>
     </div>
-
+    <% const iconMap = { txt: 'fas fa-file-alt', doc: 'fas fa-file-word', docx:
+    'fas fa-file-word', pdf: 'fas fa-file-pdf', mp3: 'fas fa-file-audio', wav:
+    'fas fa-file-audio', mp4: 'fas fa-file-video', mov: 'fas fa-file-video',
+    zip: 'fas fa-file-archive', rar: 'fas fa-file-archive' }; %>
     <div
       id="uploads"
       class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-4xl px-4"
@@ -34,6 +41,21 @@
       <div
         class="bg-neutral-900 border border-neutral-800 p-8 rounded-lg shadow-lg text-center transition-transform transform hover:scale-105"
       >
+        <div class="mb-4 flex justify-center items-center h-32">
+          <% const isImage = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(file); if
+          (isImage) { %>
+          <img
+            src="/<%= file %>"
+            alt="<%= file %>"
+            class="max-h-full max-w-full object-contain rounded-md"
+            onerror="this.onerror=null; this.src='/default-icon.png';"
+          />
+          <% } else { const ext = file.split('.').pop().toLowerCase(); const
+          iconClass = iconMap[ext] || 'fas fa-file'; %>
+          <i class="<%= iconClass %> text-4xl text-neutral-400"></i>
+          <% } %>
+        </div>
+
         <p class="text-sm font-medium truncate mb-4"><%= file %></p>
         <div class="flex justify-center gap-3">
           <a
@@ -43,6 +65,7 @@
           >
             View
           </a>
+
           <a
             href="/<%= file %>"
             download
@@ -50,7 +73,6 @@
           >
             Download
           </a>
-
           <button
             onclick="deleteFile('<%= file %>')"
             class="delete-btn px-5 py-2 bg-red-600 text-neutral-50 text-xs font-bold rounded-sm shadow-md transition-colors hover:bg-red-500 flex items-center gap-2"
